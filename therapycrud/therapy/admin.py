@@ -4,15 +4,19 @@ from .models import User, Patient, Counselor, Appointment
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username', 'email']
+    search_fields = ['username', 'email']
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ['user', 'is_active']
+    search_fields = ['user', 'is_active']
 
 class CounselorAdmin(admin.ModelAdmin):
     list_display = ['user', 'is_active']
+    search_fields = ['user', 'is_active']
 
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ['patient', 'counselor', 'appointment_date', 'is_active']
+    search_fields = ['patient', 'counselor', 'appointment_date', 'is_active']
 
 
 admin.site.register(User, UserAdmin)
