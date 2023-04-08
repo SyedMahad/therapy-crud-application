@@ -7,12 +7,12 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ['username', 'email']
 
 class PatientAdmin(admin.ModelAdmin):
-    list_display = ['user', 'is_active']
-    search_fields = ['user', 'is_active']
+    list_display = ['username', 'is_active']
+    search_fields = ['username', 'is_active']
 
 class CounselorAdmin(admin.ModelAdmin):
-    list_display = ['user', 'is_active']
-    search_fields = ['user', 'is_active']
+    list_display = ['username', 'is_active']
+    search_fields = ['username', 'is_active']
 
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ['patient', 'counselor', 'appointment_date', 'is_active']
