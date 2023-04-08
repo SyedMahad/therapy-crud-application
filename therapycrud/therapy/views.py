@@ -1,9 +1,13 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from .models import Patient, Counselor
-from .serializers import PatientSerializer, CounselorSerializer
+from .models import User, Patient, Counselor
+from .serializers import UserSerializer, PatientSerializer, CounselorSerializer
 
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
