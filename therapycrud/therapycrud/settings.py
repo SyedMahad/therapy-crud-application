@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Django Filters
+    'django_filters',
+
     # REST Framework
     'rest_framework',
     'rest_framework_simplejwt',

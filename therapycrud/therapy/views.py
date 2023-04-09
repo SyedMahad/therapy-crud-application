@@ -2,6 +2,7 @@ from django.utils import timezone
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import User, Patient, Counselor, Appointment
 from .serializers import UserSerializer, PatientSerializer, CounselorSerializer, AppointmentSerializer
@@ -14,6 +15,8 @@ class UserViewSet(viewsets.ModelViewSet):
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ('username', 'email', 'first_name', 'last_name', 'is_active',)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -25,6 +28,8 @@ class PatientViewSet(viewsets.ModelViewSet):
 class CounselorViewSet(viewsets.ModelViewSet):
     queryset = Counselor.objects.all()
     serializer_class = CounselorSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ('username', 'email', 'first_name', 'last_name', 'is_active',)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -36,6 +41,8 @@ class CounselorViewSet(viewsets.ModelViewSet):
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ('patient', 'counselor', 'appointment_date', 'is_active',)
 
     def get_queryset(self):
         queryset = Appointment.objects.filter(patient__is_active=True, counselor__is_active=True)
