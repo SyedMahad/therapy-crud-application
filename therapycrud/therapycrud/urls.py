@@ -27,5 +27,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Custom URLs
-    path('', include('therapy.urls')),
+    path('api/', include('therapy.urls')),
 ]

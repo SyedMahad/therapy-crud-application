@@ -3,8 +3,8 @@ from .models import User, Patient, Counselor, Appointment
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email']
-    search_fields = ['username', 'email']
+    list_display = ['username', 'email', 'user_type']
+    search_fields = ['username', 'email', 'user_type']
 
 class PatientAdmin(admin.ModelAdmin):
     list_display = ['username', 'is_active']
