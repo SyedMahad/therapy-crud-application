@@ -4,8 +4,8 @@ This is a Django-based web application that provides a CRUD (Create, Read, Updat
 
 ## System Requirements
 
-![Python](https://img.shields.io/badge/python-3.8.x-blue.svg)
-![Django](https://img.shields.io/badge/django-3.x-green.svg)
+![Python](https://img.shields.io/badge/python-3.8.x-blue.svg)  
+![Django](https://img.shields.io/badge/django-3.x-green.svg)  
 ![Django Rest Framework](https://img.shields.io/badge/django--rest--framework-3.x-red.svg)
 
 ## Installation

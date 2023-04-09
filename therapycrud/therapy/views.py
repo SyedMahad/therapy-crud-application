@@ -9,48 +9,73 @@ from .serializers import UserSerializer, PatientSerializer, CounselorSerializer,
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """Viewset to handle CRUD operations for User model"""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 class PatientViewSet(viewsets.ModelViewSet):
+    """Viewset to handle CRUD operations for Patient model"""
+
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ('username', 'email', 'first_name', 'last_name', 'is_active',)
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Soft delete for Patient objects.
+        Instead of actually deleting the object, set the `is_active` field to False.
+        """
         instance = self.get_object()
+
+        # Set is_active to False to deactivate the patient
         instance.is_active = False
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CounselorViewSet(viewsets.ModelViewSet):
+    """Viewset to handle CRUD operations for Counselor model"""
+
     queryset = Counselor.objects.all()
     serializer_class = CounselorSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ('username', 'email', 'first_name', 'last_name', 'is_active',)
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Soft delete for Counselor objects.
+        Instead of actually deleting the object, set the `is_active` field to False.
+        """
         instance = self.get_object()
+
+        # Set is_active to False to deactivate the counselor
         instance.is_active = False
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class AppointmentViewSet(viewsets.ModelViewSet):
+    """Viewset to handle CRUD operations for Appointment model"""
+
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ('patient', 'counselor', 'appointment_date', 'is_active',)
 
     def get_queryset(self):
+        """Retrieve all active Appointments for Patient and Counselor"""
         queryset = Appointment.objects.filter(patient__is_active=True, counselor__is_active=True)
+
+        # Update is_active status for each appointment
         for appointment in queryset:
             appointment.update_is_active()
+
         return queryset
 
     def create(self, request, *args, **kwargs):
+        """Create new Appointment"""
         patient = request.data.get('patient')
         counselor = request.data.get('counselor')
         appointment_date = request.data.get('appointment_date')
@@ -63,17 +88,23 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+
+        # Update is_active status for the new appointment
         serializer.instance.update_is_active()
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def update(self, request, *args, **kwargs):
+        """Update existing Appointment"""
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
 
         appointment_date = request.data.get('appointment_date')
         if appointment_date:
             instance.appointment_date = appointment_date
+
+            # Update is_active status if appointment_date has changed
             instance.update_is_active()
 
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -83,7 +114,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Soft delete for Appointment objects.
+        Instead of actually deleting the object, set the `is_active` field to False.
+        """
         instance = self.get_object()
+
+        # Set is_active to False to deactivate the appointment
         instance.is_active = False
         instance.save()
 
