@@ -80,6 +80,24 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         counselor = request.data.get('counselor')
         appointment_date = request.data.get('appointment_date')
 
+        # check if the patient is active
+        patient = Patient.objects.filter(patient_id=patient)
+        if patient.exists():
+            patient = patient.first()
+            if not patient.is_active:
+                return Response({'detail': 'This is not an active Patient'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': 'No such Patient found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # check if the patient is active
+        counselor = Counselor.objects.filter(patient_id=patient)
+        if counselor.exists():
+            counselor = counselor.first()
+            if not counselor.is_active:
+                return Response({'detail': 'This is not an active Counselor'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': 'No such Counselor found'}, status=status.HTTP_400_BAD_REQUEST)
+
         # check if the patient and counselor already have an active appointment
         active_appointments = Appointment.objects.filter(patient_id=patient, counselor_id=counselor, is_active=True)
         if active_appointments.exists():
@@ -99,6 +117,24 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         """Update existing Appointment"""
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+
+        # Check if the patient is active
+        patient = Patient.objects.filter(patient_id=request.data.get('patient'))
+        if patient.exists():
+            patient = patient.first()
+            if not patient.is_active:
+                return Response({'detail': 'This is not an active Patient'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': 'No such Patient found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the counselor is active
+        counselor = Counselor.objects.filter(patient_id=request.data.get('counselor'))
+        if counselor.exists():
+            counselor = counselor.first()
+            if not counselor.is_active:
+                return Response({'detail': 'This is not an active Counselor'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': 'No such Counselor found'}, status=status.HTTP_400_BAD_REQUEST)
 
         appointment_date = request.data.get('appointment_date')
         if appointment_date:
