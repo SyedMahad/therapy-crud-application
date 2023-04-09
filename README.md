@@ -22,7 +22,8 @@ This is a Django-based web application that provides a CRUD (Create, Read, Updat
 1. Activate the virtual environment (optional):
     ```sh
     Windows: env\Scripts\activate
-    Unix or Linux: source env/bin/activate ```
+    Unix or Linux: source env/bin/activate
+    ```
 1. Install the required packages:
     ```sh
     pip install -r requirements.txt
