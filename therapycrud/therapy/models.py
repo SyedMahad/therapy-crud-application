@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -49,4 +50,10 @@ class Appointment(models.Model):
     def __str__(self):
         return f"{self.patient.username}'s appointment with {self.counselor.username}"
 
-
+    def update_is_active(self):
+        now = timezone.now()
+        if self.appointment_date < now:
+            self.is_active = False
+        else:
+            self.is_active = True
+        self.save()
