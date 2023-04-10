@@ -6,7 +6,7 @@ from .views import UserViewSet, PatientViewSet, CounselorViewSet, AppointmentVie
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'patients', PatientViewSet, basename='patient')
-router.register(r'counselors', CounselorViewSet)
+router.register(r'counselors', CounselorViewSet, basename='counselor')
 router.register(r'appointments', AppointmentViewSet)
 
 urlpatterns = [
