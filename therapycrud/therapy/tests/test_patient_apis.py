@@ -53,11 +53,39 @@ class TestPatientViewSet(APITestCase):
         self.client.force_authenticate(user=self.admin_user)
 
     def test_list_patients(self):
+        # Create some test patients
+        # Test Patient 1
+        Patient.objects.create(
+            username='test1',
+            email='test1@example.com',
+            first_name='Test',
+            last_name='1'
+        )
+
+        # Test Patient 2
+        Patient.objects.create(
+            username='test2',
+            email='test2@example.com',
+            first_name='Test',
+            last_name='2'
+        )
+
         # Send a GET request to the 'patient-list' endpoint
         response = self.client.get(reverse_lazy('patient-list'))
 
         # Ensure that the response status code is 200 OK
         self.assertEqual(response.status_code, 200)
+
+        # Assert that the number of patients in the database is now 3
+        # 1 Patient we created for this class
+        # 2 Patients we created above for this method only
+        self.assertEqual(len(response.data), 3)
+
+        # Assert that the response data contains the expected patient data
+        self.assertEqual(response.data[1]['username'], 'test1')
+        self.assertEqual(response.data[1]['email'], 'test1@example.com')
+        self.assertEqual(response.data[2]['username'], 'test2')
+        self.assertEqual(response.data[2]['email'], 'test2@example.com')
 
     def test_create_patient(self):
         # Define the data for the new patient
@@ -76,7 +104,7 @@ class TestPatientViewSet(APITestCase):
 
         # Assert that the number of patients in the database is now 2
         # one is the Patient we created for this class
-        # two is the Patient we created for this method
+        # other one is the Patient we created above for this method
         self.assertEqual(Patient.objects.count(), 2)
 
         # Assert that the attributes of the created patient match the provided data
@@ -86,6 +114,30 @@ class TestPatientViewSet(APITestCase):
         self.assertEqual(patient.user_type, 'patient')
         self.assertEqual(patient.first_name, 'John')
         self.assertEqual(patient.last_name, 'Doe')
+
+    def test_update_patient(self):
+        # Create a test patient
+        patient = Patient.objects.create(
+            username='testuser',
+            email='testuser@example.com',
+            first_name='Test',
+            last_name='User'
+        )
+
+        # Create test data for update
+        data = {
+            'email': 'newemail@example.com'
+        }
+
+        # Send PATCH request to update the patient
+        response = self.client.patch(reverse_lazy('patient-detail', args=[patient.id]), data)
+
+        # Assert that the response status code is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Assert that the patient was updated with the expected data
+        patient.refresh_from_db()
+        self.assertEqual(patient.email, 'newemail@example.com')
 
     def test_delete_patient(self):
         # Send a DELETE request to the patient detail endpoint with the patient's id

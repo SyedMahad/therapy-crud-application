@@ -10,7 +10,7 @@ from therapy.models import Counselor
 
 User = get_user_model()
 
-class TestPatientViewSet(APITestCase):
+class TestCounselorViewSet(APITestCase):
 
     def setUp(self):
         # Create a superuser for testing purposes
@@ -52,14 +52,42 @@ class TestPatientViewSet(APITestCase):
         # Force authentication of the test client as the admin user
         self.client.force_authenticate(user=self.admin_user)
 
-    def test_list_patients(self):
+    def test_list_counselors(self):
+        # Create some test counselor
+        # Test Counselor 1
+        Counselor.objects.create(
+            username='test1',
+            email='test1@example.com',
+            first_name='Test',
+            last_name='1'
+        )
+
+        # Test Counselor 2
+        Counselor.objects.create(
+            username='test2',
+            email='test2@example.com',
+            first_name='Test',
+            last_name='2'
+        )
+
         # Send a GET request to the 'counselor-list' endpoint
         response = self.client.get(reverse_lazy('counselor-list'))
 
         # Ensure that the response status code is 200 OK
         self.assertEqual(response.status_code, 200)
 
-    def test_create_patient(self):
+        # Assert that the number of counselor in the database is now 3
+        # 1 Counselor we created for this class
+        # 2 Counselors we created above for this method only
+        self.assertEqual(len(response.data), 3)
+
+        # Assert that the response data contains the expected counselor data
+        self.assertEqual(response.data[1]['username'], 'test1')
+        self.assertEqual(response.data[1]['email'], 'test1@example.com')
+        self.assertEqual(response.data[2]['username'], 'test2')
+        self.assertEqual(response.data[2]['email'], 'test2@example.com')
+
+    def test_create_counselor(self):
         # Define the data for the new counselor
         data = {
             'email': 'johndoe@example.com',
@@ -74,7 +102,7 @@ class TestPatientViewSet(APITestCase):
         # Assert that the request was successful and the counselor was created
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Assert that the number of patients in the database is now 2
+        # Assert that the number of counselor in the database is now 2
         # one is the Counselor we created for this class
         # two is the Counselor we created for this method
         self.assertEqual(Counselor.objects.count(), 2)
@@ -87,7 +115,31 @@ class TestPatientViewSet(APITestCase):
         self.assertEqual(counselor.first_name, 'John')
         self.assertEqual(counselor.last_name, 'Doe')
 
-    def test_delete_patient(self):
+    def test_update_counselor(self):
+        # Create a test counselor
+        counselor = Counselor.objects.create(
+            username='testuser',
+            email='testuser@example.com',
+            first_name='Test',
+            last_name='User'
+        )
+
+        # Create test data for update
+        data = {
+            'email': 'newemail@example.com'
+        }
+
+        # Send PATCH request to update the counselor
+        response = self.client.patch(reverse_lazy('counselor-detail', args=[counselor.id]), data)
+
+        # Assert that the response status code is 200 OK
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Assert that the counselor was updated with the expected data
+        counselor.refresh_from_db()
+        self.assertEqual(counselor.email, 'newemail@example.com')
+
+    def test_delete_counselor(self):
         # Send a DELETE request to the counselor detail endpoint with the counselor's id
         response = self.client.delete(reverse_lazy('counselor-detail', args=[self.counselor.id]))
 
