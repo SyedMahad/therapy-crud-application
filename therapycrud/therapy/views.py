@@ -1,11 +1,19 @@
-from django.utils import timezone
-
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import User, Patient, Counselor, Appointment
-from .serializers import UserSerializer, PatientSerializer, CounselorSerializer, AppointmentSerializer
+from .serializers import (
+    UserSerializer,
+    PatientSerializer,
+    CounselorSerializer,
+    AppointmentSerializer,
+    RegisterSerializer,
+    CustomTokenObtainPairSerializer,
+)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -161,3 +169,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         instance.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
